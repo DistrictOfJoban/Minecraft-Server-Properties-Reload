@@ -1,14 +1,22 @@
 package chylex.serverproperties.mixin;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Mixin(DedicatedServerProperties.class)
 public interface DedicatedServerPropertiesMixin {
+	@Invoker("getServerPackInfo")
+	Optional<MinecraftServer.ServerResourcePackInfo> getServerPackInfo(String url, String sha1, @Nullable String hash, boolean required, String prompt);
 	@Mutable @Accessor void setAllowFlight(boolean allowFlight);
 	@Mutable @Accessor void setAllowNether(boolean allowNether);
 	@Mutable @Accessor void setBroadcastConsoleToOps(boolean broadcastConsoleToOps);
@@ -37,10 +45,6 @@ public interface DedicatedServerPropertiesMixin {
 	@Mutable @Accessor void setQueryPort(int queryPort);
 	@Mutable @Accessor void setRconPassword(String rconPassword);
 	@Mutable @Accessor void setRconPort(int rconPort);
-	@Mutable @Accessor void setRequireResourcePack(boolean requireResourcePack);
-	@Mutable @Accessor void setResourcePack(String resourcePack);
-	@Mutable @Accessor void setResourcePackPrompt(String resourcePackPrompt);
-	@Mutable @Accessor void setResourcePackSha1(String sha1);
 	@Mutable @Accessor void setSimulationDistance(int simulationDistance);
 	@Mutable @Accessor void setSpawnAnimals(boolean spawnAnimals);
 	@Mutable @Accessor void setSpawnMonsters(boolean spawnMonsters);

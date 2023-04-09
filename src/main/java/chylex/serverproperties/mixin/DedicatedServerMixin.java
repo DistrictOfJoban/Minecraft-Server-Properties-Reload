@@ -27,12 +27,8 @@ public interface DedicatedServerMixin {
 	@Accessor
 	DedicatedServerSettings getSettings();
 	
-	@Mutable
-	@Accessor
-	void setResourcePackPrompt(Component component);
-	
-	@Invoker
-	static Component callParseResourcePackPrompt(final DedicatedServerSettings settings) {
-		throw new AssertionError();
-	}
+//	@Invoker
+//	static Component callParseResourcePackPrompt(final DedicatedServerSettings settings) {
+//		throw new AssertionError();
+//	}
 }

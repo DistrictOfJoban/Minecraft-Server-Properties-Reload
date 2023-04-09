@@ -1,23 +1,32 @@
 package chylex.serverproperties.props.supported;
+import chylex.serverproperties.mixin.DedicatedServerMixin;
 import chylex.serverproperties.mixin.DedicatedServerPropertiesMixin;
 import chylex.serverproperties.props.PropertyChangeCallback;
 import chylex.serverproperties.props.ServerProperty;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
+import net.minecraft.server.dedicated.DedicatedServerSettings;
 
 public final class ResourcePackSha1Property extends ServerProperty<String> {
 	public static final ResourcePackSha1Property INSTANCE = new ResourcePackSha1Property();
-	
+
 	private ResourcePackSha1Property() {}
-	
+
 	@Override
 	public String get(final DedicatedServerProperties properties) {
-		return properties.resourcePackSha1;
+		MinecraftServer.ServerResourcePackInfo o = properties.serverResourcePackInfo.orElse(null);
+		return o.hash();
 	}
-	
+
 	@Override
 	public void apply(final DedicatedServer server, final DedicatedServerPropertiesMixin target, final String value, final PropertyChangeCallback callback) {
-		target.setResourcePackSha1(value);
-		server.setResourcePack(server.getResourcePack(), server.getPackHash());
+		DedicatedServerSettings settings = ((DedicatedServerMixin)server).getSettings();
+		DedicatedServerProperties ogProp = settings.getProperties();
+		ogProp.serverResourcePackInfo.ifPresent(packInfo -> settings.update((prop) -> {
+			String prompt = packInfo.prompt() == null ? null : net.minecraft.network.chat.Component.Serializer.toJson(packInfo.prompt());
+			prop.serverResourcePackInfo = ((DedicatedServerPropertiesMixin) prop).getServerPackInfo(packInfo.url(), value, null, packInfo.isRequired(), prompt);
+			return prop;
+		}));
 	}
 }
