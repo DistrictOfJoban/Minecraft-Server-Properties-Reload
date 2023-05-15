@@ -23,13 +23,10 @@ public final class ResourcePackPromptProperty extends ServerProperty<String> {
 	@Override
 	public void apply(final DedicatedServer server, final DedicatedServerPropertiesMixin target, final String value, final PropertyChangeCallback callback) {
 		DedicatedServerSettings settings = ((DedicatedServerMixin)server).getSettings();
-		DedicatedServerProperties ogProp = settings.getProperties();
-		ogProp.serverResourcePackInfo.ifPresent(packInfo -> settings.update((prop) -> {
-			prop.serverResourcePackInfo = ((DedicatedServerPropertiesMixin) prop).getServerPackInfo(packInfo.url(), packInfo.hash(), packInfo.hash(), packInfo.isRequired(), value);
-			return prop;
-		}));
+		DedicatedServerProperties prop = settings.getProperties();
+		MinecraftServer.ServerResourcePackInfo packInfo = prop.serverResourcePackInfo.orElse(null);
+		if(packInfo == null) return;
 
-//		@SuppressWarnings("CastToIncompatibleInterface") final DedicatedServerMixin serverMixin = (DedicatedServerMixin)server;
-//		serverMixin.setResourcePackPrompt(DedicatedServerMixin.callParseResourcePackPrompt(serverMixin.getSettings()));
+		prop.serverResourcePackInfo = ((DedicatedServerPropertiesMixin) prop).getServerPackInfo(packInfo.url(), packInfo.hash(), packInfo.hash(), packInfo.isRequired(), value);
 	}
 }

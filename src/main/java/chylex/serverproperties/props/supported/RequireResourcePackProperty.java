@@ -23,11 +23,11 @@ public final class RequireResourcePackProperty extends BoolServerProperty {
 	@Override
 	protected void applyBool(final DedicatedServer server, final DedicatedServerPropertiesMixin target, final boolean value, final PropertyChangeCallback callback) {
 		DedicatedServerSettings settings = ((DedicatedServerMixin)server).getSettings();
-		DedicatedServerProperties ogProp = settings.getProperties();
-		ogProp.serverResourcePackInfo.ifPresent(packInfo -> settings.update((prop) -> {
-			String prompt = packInfo.prompt() == null ? null : net.minecraft.network.chat.Component.Serializer.toJson(packInfo.prompt());
-			prop.serverResourcePackInfo = ((DedicatedServerPropertiesMixin) prop).getServerPackInfo(packInfo.url(), packInfo.hash(), packInfo.hash(), value, prompt);
-			return prop;
-		}));
+		DedicatedServerProperties prop = settings.getProperties();
+		MinecraftServer.ServerResourcePackInfo packInfo = prop.serverResourcePackInfo.orElse(null);
+		if(packInfo == null) return;
+
+		String prompt = packInfo.prompt() == null ? null : net.minecraft.network.chat.Component.Serializer.toJson(packInfo.prompt());
+		prop.serverResourcePackInfo = ((DedicatedServerPropertiesMixin) prop).getServerPackInfo(packInfo.url(), packInfo.hash(), packInfo.hash(), value, prompt);
 	}
 }
